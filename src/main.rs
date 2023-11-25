@@ -1,57 +1,100 @@
-use std::{io, collections::hash_map::DefaultHasher, hash::{Hash, Hasher}, time::Instant};
+use std::{io, time::Instant};
 
 use crate::taquin::{Taquin, ai::astar};
 
 mod taquin;
-
+mod test;
 
 
 fn main() {
+    // Display menu to choose the size of the Taquin
+    println!("Choose the size of the Taquin:");
+    println!("1. Size 3x3");
+    println!("2. Size 4x4");
 
-    let t = Taquin::new(3);
+    let mut size_choice = String::new();
+    io::stdin().read_line(&mut size_choice).expect("Failed to read line");
+    let size = match size_choice.trim().parse::<usize>() {
+        Ok(1) => 3,
+        Ok(2) => 4,
+        _ => {
+            println!("Invalid choice. Defaulting to size 3x3.");
+            3
+        }
+    };
+
+    let t = Taquin::new(size);
+    let mut t_to_solv = Taquin::new_rand(size);
     t.show();
     println!("=================================");
-    let mut t2 = Taquin::new_rand(3);
+    t_to_solv.show();
 
-    t2.show();
-
-    let mouv_resolv;
-    let now = Instant::now();
-    {
-        // With manhattan heuristic
-        mouv_resolv = astar(&t2, &t, &Taquin::heuristic_manhattan);
-        
-        // With hamming heuristic
-        // mouv_resolv = astar(&t2, &t, &Taquin::heuristic_hamming);
+    // Display menu to choose whether to solve automatically or manually
+    println!("Choose how to solve the Taquin:");
+    if size == 4 {
+        println!("1. Solve automatically with AI (may not succeed because the complexity is too high)");
+    } else {
+        println!("1. Solve automatically with AI");
     }
-    let time = now.elapsed();
+    println!("2. Solve manually");
 
-    println!("Résolue en {} coups et en {:.3?}",mouv_resolv.len(),time);
-    
-    
-    
-    
-    // while t2 != t {
-    //     // let mut s = String::new();
+    let mut solve_choice = String::new();
+    io::stdin().read_line(&mut solve_choice).expect("Failed to read line");
 
-    //     // io::stdin()
-    //     //     .read_line(&mut s)
-    //     //     .expect("erreur");
+    if solve_choice.trim() == "1" {
+        // Solve automatically with AI
+        // Display mth AI : you can then chose the oose the heuristic for AI solving:");
+        println!("1. Manhattan heuristic");
+        println!("2. Hamming heuristic");
 
-    //     println!("Coup jouer : {:?}",v_test[i]);
+        let mut heuristic_choice = String::new();
+        io::stdin().read_line(&mut heuristic_choice).expect("Failed to read line");
 
-    //     t2.make_move(v_test[i]);
+        let mouv_resolv;
+        let now = Instant::now();
+        if heuristic_choice.trim() == "1" {
+            mouv_resolv = astar(&t_to_solv,&t, &Taquin::heuristic_manhattan);
+        } else if heuristic_choice.trim() == "2" {
+            mouv_resolv = astar(&t_to_solv,&t, &Taquin::heuristic_hamming);
+        } else {
+            println!("Invalid choice. Defaulting to Manhattan heuristic.");
+            mouv_resolv = astar(&t_to_solv,&t, &Taquin::heuristic_manhattan);
+        }
 
-    //     // let res = match s.trim() {
-    //     //     "Up"|"up"|"u" => t2.make_move(taquin::Move::Up),
-    //     //     "Down"|"down"|"d" => t2.make_move(taquin::Move::Down),
-    //     //     "Left"|"left"|"l" => t2.make_move(taquin::Move::Left),
-    //     //     "Right"|"right"|"r" => t2.make_move(taquin::Move::Right),
-    //     //     _ => false,
-    //     // };
-    //     i +=1;
-    //     t2.show();
-    // }
+        let time = now.elapsed();
+        println!("Move list : {:?}",mouv_resolv);
+        println!("Solved in {} moves and {:.3?}", mouv_resolv.len(), time);
+    } else if solve_choice.trim() == "2" {
+        // Solve manually by hand
 
+        let mut i = 0;
+        let now = Instant::now();
+        while t_to_solv != t {
+            // Get user input for move
+            let available_moves = t_to_solv.available_move();
 
+            println!("Enter a move {:?}:",available_moves);
+            let mut move_input = String::new();
+            io::stdin().read_line(&mut move_input).expect("Failed to read line");
+
+            let res = match move_input.trim().to_lowercase().as_str() {
+                "up"|"u" => t_to_solv.make_move(taquin::Move::Up),
+                "down"|"d" => t_to_solv.make_move(taquin::Move::Down),
+                "left"|"l" => t_to_solv.make_move(taquin::Move::Left),
+                "right"|"r" => t_to_solv.make_move(taquin::Move::Right),
+                _ => false,
+            };
+
+            if !res {
+                println!("Invalid move. Try again.");
+            } else {
+                i += 1;
+                t_to_solv.show();
+            }
+        }
+        let time = now.elapsed();
+        println!("Solved in {} moves and {:.3?}", i, time);
+    } else {
+        println!("Invalid choice. Exiting.");
+    }
 }

@@ -71,7 +71,7 @@ impl Taquin {
         
         let mut t = Self::new(size);
 
-        let n = size*size*100;
+        let n = size*size*1000;
 
         let mut rng = rand::thread_rng();
 
@@ -95,6 +95,7 @@ impl Taquin {
         }
         println!("");
     }
+
     /** Calculate the heuristic of Hamming (distance) between 2 taquin board
      * 
      */
@@ -119,7 +120,7 @@ impl Taquin {
      */
     pub fn heuristic_manhattan(t1: &Taquin, t2: &Taquin) -> u32 {
         assert_eq!(t1.size,t2.size,"taquin must be of the same size");
-        let mut res = 1;
+        let mut res = 0;
         
         for i in 0..t1.size {
             for j in 0..t1.size {
@@ -144,7 +145,7 @@ impl Taquin {
     pub fn make_move(&mut self, m: Move) -> bool {
 
         if ! self.available_move().contains(&m) {
-            println!("Illegal move !");
+            println!("Illegal move : {:?}!",m);
             return false;
         }
 
