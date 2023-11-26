@@ -62,6 +62,10 @@ fn astar_test() {
     
     let mut taquin1 = Taquin::new(3);
     let taquin2 = Taquin::new(3);
+
+    let moves = astar(&taquin1, &taquin2, &Taquin::heuristic_hamming);
+    assert_eq!(moves,vec![],"0 move");
+
     taquin1.make_move(Move::Left);
 
     let moves = astar(&taquin1, &taquin2, &Taquin::heuristic_hamming);
@@ -92,4 +96,17 @@ fn astar_test() {
     let moves = astar(&taquin1, &taquin2, &Taquin::heuristic_hamming);
     
     assert_eq!(moves,vec![Move::Left,Move::Left,Move::Down,Move::Down,Move::Right,Move::Right],"6 move");
+
+    // Test resolution work
+    let mut taquin1 = Taquin::new_rand(3);
+    let moves = astar(&taquin1, &taquin2, &Taquin::heuristic_hamming);
+
+    for m in moves {
+        taquin1.make_move(m);
+    }
+
+    assert_eq!(taquin2,taquin1,"After suffle");
+
+
+
 }

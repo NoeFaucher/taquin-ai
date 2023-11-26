@@ -7,21 +7,8 @@ mod test;
 
 
 fn main() {
-    // Display menu to choose the size of the Taquin
-    println!("Choose the size of the Taquin:");
-    println!("1. Size 3x3");
-    println!("2. Size 4x4");
-
-    let mut size_choice = String::new();
-    io::stdin().read_line(&mut size_choice).expect("Failed to read line");
-    let size = match size_choice.trim().parse::<usize>() {
-        Ok(1) => 3,
-        Ok(2) => 4,
-        _ => {
-            println!("Invalid choice. Defaulting to size 3x3.");
-            3
-        }
-    };
+    
+    let size = 3;
 
     let t = Taquin::new(size);
     let mut t_to_solv = Taquin::new_rand(size);
@@ -31,11 +18,7 @@ fn main() {
 
     // Display menu to choose whether to solve automatically or manually
     println!("Choose how to solve the Taquin:");
-    if size == 4 {
-        println!("1. Solve automatically with AI (may not succeed because the complexity is too high)");
-    } else {
-        println!("1. Solve automatically with AI");
-    }
+    println!("1. Solve automatically with AI");
     println!("2. Solve manually");
 
     let mut solve_choice = String::new();
@@ -64,6 +47,7 @@ fn main() {
         let time = now.elapsed();
         println!("Move list : {:?}",mouv_resolv);
         println!("Solved in {} moves and {:.3?}", mouv_resolv.len(), time);
+
     } else if solve_choice.trim() == "2" {
         // Solve manually by hand
 
